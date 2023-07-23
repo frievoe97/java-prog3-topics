@@ -14,7 +14,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class WunderController extends Application implements LagerBeobachter {
+/**
+ * Die Klasse WunderController ist der Controller für die Benutzeroberfläche des "Haus Tausender Wunder".
+ * Sie erbt von der JavaFX Application-Klasse und implementiert das LagerBeobachter-Interface.
+ * Der Controller ermöglicht die Interaktion mit der Benutzeroberfläche und die Steuerung der Anwendung.
+ * Er verwaltet das "Haus Tausender Wunder" und stellt die Verbindung zwischen der Benutzeroberfläche und dem Modell her.
+ *
+ * @author Doro
+ */
+public final class WunderController extends Application implements LagerBeobachter {
 
     @FXML
     private TextArea txtGefaesse;
@@ -31,27 +39,42 @@ public class WunderController extends Application implements LagerBeobachter {
     @FXML
     private TextField txtGesamtpreis;
 
-    private HausTausenderWunder htw = new HausTausenderWunder();
+    private final HausTausenderWunder htw = new HausTausenderWunder();
 
+    /**
+     * Initialisiert die Benutzeroberfläche nach dem Laden des FXML-Dokuments.
+     * Wird automatisch von JavaFX aufgerufen.
+     * Fügt die möglichen Gefäßformen zur ChoiceBox hinzu und fügt den Controller als LagerBeobachter hinzu.
+     * Bindet das Property für den Gesamtpreis an das Textfeld für die Anzeige.
+     */
     @FXML
     private void initialize() {
         ObservableList<String> obs;
-        obs = FXCollections.observableArrayList(new String[]{"Zylinder", "Quader", "Pyramide"});
+        obs = FXCollections.observableArrayList("Zylinder", "Quader", "Pyramide");
         chbForm.setItems(obs);
         chbForm.getSelectionModel().selectFirst();
         htw.beobachterHinzufuegen(this);
         this.txtGesamtpreis.textProperty().bind(this.htw.gesamtpreisProperty().asString());
     }
 
+    /**
+     * Aktualisiert die Anzeige der Gefäßliste im TextArea auf der Benutzeroberfläche.
+     * Da JavaFX-Elemente nur auf dem JavaFX Application Thread aktualisiert werden dürfen,
+     * wird die Aktualisierung mit Platform.runLater() durchgeführt.
+     *
+     * @param text Der zu aktualisierende Text.
+     */
     private void listeAktualisieren(String text) {
-        Platform.runLater(() ->
-        {
+        Platform.runLater(() -> {
             txtGefaesse.setText(text);
         });
     }
 
     /**
-     * startet die Produktion
+     * Startet die Produktion von Gefäßen basierend auf den eingegebenen Werten
+     * für den Preis des Inhalts, die Länge und die Höhe.
+     * Die Produktion erfolgt mithilfe einer Gefäßfabrik, die zufällig Gefäße erstellt.
+     * Aktualisiert die Benutzeroberfläche mit einer Meldung über den Start der Produktion.
      */
     public void starten() {
         double preisInhalt;
@@ -70,7 +93,8 @@ public class WunderController extends Application implements LagerBeobachter {
     }
 
     /**
-     * stoppt die Produktion
+     * Stoppt die Produktion von Gefäßen.
+     * Aktualisiert die Benutzeroberfläche mit einer Meldung über den gestoppten Produktionsvorgang.
      */
     public void stoppen() {
         htw.produktionStoppen();
@@ -78,28 +102,31 @@ public class WunderController extends Application implements LagerBeobachter {
     }
 
     /**
-     * kauft ein Gefäß
+     * Kauft ein ausgewähltes Gefäß basierend auf den eingegebenen Werten für Länge, Höhe und Preis des Inhalts.
+     * Das ausgewählte Gefäß wird anhand des Inhalts der ChoiceBox ermittelt.
+     * Wenn das Gefäß vorhanden ist, wird es aus dem Lager entnommen und der Gesamtpreis wird aktualisiert.
+     * Bei Fehlern (z. B. keine Zahl eingegeben oder Gefäß nicht vorhanden) wird eine entsprechende Meldung angezeigt.
      */
     public void kaufen() {
         try {
-            double l = Double.parseDouble(txtLaenge.getText());
-            double h = Double.parseDouble(txtHoehe.getText());
-            double p = Double.parseDouble(txtPreisinhalt.getText());
+            double laenge = Double.parseDouble(txtLaenge.getText());
+            double hoehe = Double.parseDouble(txtHoehe.getText());
+            double preis = Double.parseDouble(txtPreisinhalt.getText());
 
             String form = chbForm.getValue();
-            Gefaess g = null;
+            Gefaess gefaess = null;
             switch (form) {
                 case "Zylinder":
-                    g = new Zylinder(p, l, h);
+                    gefaess = new Zylinder(preis, laenge, hoehe);
                     break;
                 case "Quader":
-                    g = new Quader(p, l, h);
+                    gefaess = new Quader(preis, laenge, hoehe);
                     break;
                 case "Pyramide":
-                    g = new Pyramide(p, l, h);
+                    gefaess = new Pyramide(preis, laenge, hoehe);
                     break;
             }
-            htw.gefaessKaufen(g);
+            htw.gefaessKaufen(gefaess);
         } catch (NichtVorhandenException e) {
             lblMeldung.setText("Gefaess nicht vorhanden!");
             return;
@@ -110,15 +137,25 @@ public class WunderController extends Application implements LagerBeobachter {
         lblMeldung.setText("");
     }
 
-
-    // TODO: JavaDoc
+    /**
+     * Implementiert die Methode aus dem LagerBeobachter-Interface.
+     * Wird aufgerufen, wenn sich der Lagerbestand ändert.
+     * Aktualisiert die Anzeige der Gefäßliste auf der Benutzeroberfläche.
+     */
     @Override
     public void lagerGeaendert() {
         this.listeAktualisieren(htw.getGefaessliste());
     }
 
+    /**
+     * Startet die JavaFX-Anwendung und zeigt die Benutzeroberfläche an.
+     * Die Methode wird von der Application-Klasse aufgerufen.
+     *
+     * @param stage Die Hauptbühne (Stage) für die JavaFX-Anwendung.
+     */
     @Override
     public void start(Stage stage) throws Exception {
+        // Laden des FXML-Dokuments und Setzen des Controllers
         FXMLLoader loader = new FXMLLoader(getClass().getResource("WunderOberflaeche.fxml"));
         loader.setController(this);
         Parent lc = loader.load();
@@ -127,11 +164,10 @@ public class WunderController extends Application implements LagerBeobachter {
         stage.setScene(scene);
         stage.show();
 
-        // Was passiert beim Schließen
+        // Verhalten beim Schließen des Fensters
         stage.setOnCloseRequest(e -> {
             this.htw.produktionStoppen();
             this.htw.beobachterEntfernen(this);
-            //System.exit(0);
             stage.close();
         });
     }

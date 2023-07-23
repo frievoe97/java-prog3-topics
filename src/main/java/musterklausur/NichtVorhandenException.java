@@ -3,8 +3,8 @@ package musterklausur;
 /**
  * Diese Exception tritt auf, wenn ein gewünschtes Gefäß
  * nicht im Lager vorhanden ist
- * @author Doro
  *
+ * @author Doro
  */
 public class NichtVorhandenException extends Exception {
 

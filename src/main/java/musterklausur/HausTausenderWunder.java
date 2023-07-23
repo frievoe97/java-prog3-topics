@@ -10,27 +10,33 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Diese Klasse stellt den Laden "Haus Tausender Wunder" dar, der
- * viele tolle Gefäße produziert und aus dem Lager heraus verkauft.
+ * Die Klasse HausTausenderWunder repräsentiert den Laden "Haus Tausender Wunder", der viele
+ * tolle Gefäße produziert und aus dem Lager heraus verkauft. Das HausTausenderWunder-Objekt
+ * verwaltet die Lagerverwaltung, startet und stoppt die Produktion von Gefäßen und benachrichtigt
+ * Beobachter über Änderungen im Lagerbestand. Die Klasse implementiert das Observer Pattern
+ * mit dem LagerBeobachter-Interface, um auf Änderungen im Lagerbestand zu reagieren. Sie ist
+ * ein wichtiger Bestandteil des Abstract Factory Patterns, da sie die Gefäßproduktion und
+ * Lagerverwaltung steuert. Die Gesamtsumme des Lagerbestands wird über ein DoubleProperty
+ * gespeichert, um Beobachtern die Aktualisierung zu ermöglichen.
  *
  * @author Doro
  */
 public class HausTausenderWunder {
 
     /**
-     * Anzahl der Gefäße nach der Art des Gefäßes.
+     * Eine Map, die die Anzahl der Gefäße nach der Art des Gefäßes speichert.
      */
     private final Map<Gefaess, Integer> lagerverwaltung = new HashMap<>();
 
     /**
-     * Gesamtpreis des Lagerbestands.
+     * Das DoubleProperty, das den Gesamtpreis des Lagerbestands speichert.
      */
     private final DoubleProperty gesamtpreis = new SimpleDoubleProperty(0);
 
     /**
-     * Property des Gesamtpreises.
+     * Gibt das DoubleProperty des Gesamtpreises zurück.
      *
-     * @return Property des Gesamtpreises.
+     * @return Das DoubleProperty des Gesamtpreises.
      */
     public DoubleProperty gesamtpreisProperty() {
         return this.gesamtpreis;
@@ -42,19 +48,18 @@ public class HausTausenderWunder {
     private Thread produktionsThread;
 
     /**
-     * Liste aller Beobachter.
+     * Eine Liste aller Beobachter, die auf Änderungen im Lagerbestand reagieren.
      */
     private final List<LagerBeobachter> beobachter = new ArrayList<>();
 
     /**
-     * startet die Endlosproduktion von Gefäßen der angegebenen Größe
-     * mithilfe der Fabrik und fügt die erstellten Gefäße in die
-     * Lagerverwaltung ein
+     * Startet die Endlosproduktion von Gefäßen der angegebenen Größe mithilfe
+     * der Fabrik und fügt die erstellten Gefäße in die Lagerverwaltung ein.
      *
-     * @param fabrik
-     * @param preisInhalt
-     * @param laenge
-     * @param hoehe
+     * @param fabrik      Die Gefäßfabrik, die zum Erstellen der Gefäße verwendet wird.
+     * @param preisInhalt Der Preis pro cm³ des Inhalts der Gefäße.
+     * @param laenge      Die Länge der zu produzierenden Gefäße.
+     * @param hoehe       Die Höhe der zu produzierenden Gefäße.
      */
     public void produktionStarten(Gefaessfabrik fabrik, double preisInhalt,
                                   double laenge, double hoehe) {
@@ -68,17 +73,17 @@ public class HausTausenderWunder {
     }
 
     /**
-     * stoppt alle laufenden Produktionen
+     * Stoppt alle laufenden Produktionen.
      */
     public void produktionStoppen() {
         produktionsThread.interrupt();
     }
 
     /**
-     * entnimmt das Gefäß g aus der Lagerverwaltung
+     * Entnimmt das Gefäß g aus der Lagerverwaltung.
      *
-     * @param gefaess
-     * @throws NichtVorhandenException, wenn g nicht im Lager vorhanden ist
+     * @param gefaess Das Gefäß, das aus dem Lager entnommen werden soll.
+     * @throws NichtVorhandenException Wenn das Gefäß nicht im Lager vorhanden ist.
      */
     public void gefaessKaufen(Gefaess gefaess) throws NichtVorhandenException {
 
@@ -96,9 +101,9 @@ public class HausTausenderWunder {
     }
 
     /**
-     * fügt das Gefäß g in die Lagerverwaltung ein
+     * Fügt das Gefäß g in die Lagerverwaltung ein.
      *
-     * @param gefaess
+     * @param gefaess Das Gefäß, das in das Lager eingefügt werden soll.
      */
     protected void gefaessEinfuegen(Gefaess gefaess) {
         if (gefaess != null) {
@@ -110,9 +115,9 @@ public class HausTausenderWunder {
     }
 
     /**
-     * liefert einen textuelle Liste aller Gefäße mit ihrer Anzahl zurück
+     * Liefert eine textuelle Liste aller Gefäße mit ihrer Anzahl im Lager zurück.
      *
-     * @return
+     * @return Textuelle Liste aller Gefäße mit ihrer Anzahl.
      */
     public String getGefaessliste() {
         // TODO: Map Streams zu Beispielen hinzufügen
@@ -125,7 +130,7 @@ public class HausTausenderWunder {
     /**
      * Fügt einen neuen Beobachter hinzu.
      *
-     * @param lagerBeobachter
+     * @param lagerBeobachter Der hinzuzufügende LagerBeobachter.
      */
     public void beobachterHinzufuegen(LagerBeobachter lagerBeobachter) {
         beobachter.add(lagerBeobachter);
@@ -134,14 +139,14 @@ public class HausTausenderWunder {
     /**
      * Entfernt einen Beobachter aus der Liste.
      *
-     * @param lagerBeobachter
+     * @param lagerBeobachter Der zu entfernende LagerBeobachter.
      */
     public void beobachterEntfernen(LagerBeobachter lagerBeobachter) {
         beobachter.remove(lagerBeobachter);
     }
 
     /**
-     * Benachrcihtigt alle Beobachter über eine Änderung in der Lagerverwaltung.
+     * Benachrichtigt alle Beobachter über eine Änderung in der Lagerverwaltung.
      */
     public void benachrichtigen() {
         for (LagerBeobachter lagerBeobachter : beobachter) {
