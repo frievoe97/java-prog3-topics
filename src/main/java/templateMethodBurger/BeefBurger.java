@@ -1,4 +1,4 @@
-package TemplateMethodBurger;
+package templateMethodBurger;
 
 public class BeefBurger implements Burger{
 

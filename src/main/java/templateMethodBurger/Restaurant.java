@@ -1,4 +1,4 @@
-package TemplateMethodBurger;
+package templateMethodBurger;
 //Siehe: https://www.youtube.com/watch?v=EdFq_JIThqM
 public abstract class Restaurant {
 
